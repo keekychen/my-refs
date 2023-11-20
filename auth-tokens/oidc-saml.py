@@ -71,3 +71,33 @@ client = Saml2Client(conf)
 auth_req_url = client.send(auth_req)
 
 print(auth_req_url)
+
+
+
+#burying heads in sand to pretent we have security for this test env ^_^
+# !!! This is insecure, but just for to deceive oneself to have a basic mask on raw username password
+import base64
+
+# 假设这些是你编码后的用户名和密码
+encoded_username = "encoded_username_here"
+encoded_password = "encoded_password_here"
+
+# 将编码后的用户名和密码解码回原始格式
+decoded_username = base64.b64decode(encoded_username).decode()
+decoded_password = base64.b64decode(encoded_password).decode()
+
+print("Decoded Username:", decoded_username)
+print("Decoded Password:", decoded_password)
+
+import base64
+
+# 假设这是你的用户名和密码
+username = "my_username"
+password = "my_password"
+
+# 将用户名和密码编码为 Base64 格式
+encoded_username = base64.b64encode(username.encode()).decode()
+encoded_password = base64.b64encode(password.encode()).decode()
+
+print("Encoded Username:", encoded_username)
+print("Encoded Password:", encoded_password)
