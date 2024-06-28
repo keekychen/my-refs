@@ -1,33 +1,30 @@
 import requests
-import csv
+import pandas as pd
+import time
 
-# 用于发送请求的函数
-def fetch_data(base_url, params):
+# 假设 base_url 和 fetch_data 函数已定义，这里直接使用
+def fetch_data(base_url, id):
     """发送API请求并返回JSON响应"""
-    response = requests.get(base_url, params=params)
+    url = f'https://api.example.com/data/{id}?=123123'
+    response = requests.get(url)
     return response.json()
 
-# 基础 URL 和参数列表
-base_url = 'https://api.example.com/data'
-parameters_list = [{'param1': 'value1', 'param2': 'value2'}, {'param1': 'value3', 'param2': 'value4'}]
+# 参数列表
+ids_list = [1001, 1002, 1003]
 
 # 存储所有结果的列表
 results = []
 
-# 遍历参数列表，发送请求并收集数据
-for params in parameters_list:
-    result = fetch_data(base_url, params)
+# 遍历ID列表，发送请求并收集数据
+for id in ids_list:
+    result = fetch_data(base_url, id)
     results.append(result)
+    time.sleep(1)  # 暂停1秒
 
-# 将结果写入 CSV 文件
+# 处理数据并保存为CSV
+df = pd.DataFrame(results)  # 处理可能具有不同键的字典列表
 csv_file = 'results.csv'
-csv_columns = results[0].keys()  # 假设所有JSON对象都有相同的键
-
-with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-    writer.writeheader()
-    for data in results:
-        writer.writerow(data)
+df.to_csv(csv_file, index=False)  # 保存DataFrame到CSV文件，不包括行索引
 
 print("CSV文件已保存")
 
