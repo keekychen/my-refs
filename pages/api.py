@@ -9,6 +9,18 @@ def fetch_data(base_url, id):
     response = requests.get(url)
     return response.json()
 
+    try:
+        # 尝试解析JSON数据
+        return response.json()
+    except json.JSONDecodeError:
+        # 解析失败，构造错误信息的JSON
+        error_response = {
+            'did': id,
+            'fetch_error': f"Failed to decode JSON. Response was: {response.text}"
+        }
+        print(error_response)
+        return error_response
+
 # 参数列表
 ids_list = [1001, 1002, 1003]
 
