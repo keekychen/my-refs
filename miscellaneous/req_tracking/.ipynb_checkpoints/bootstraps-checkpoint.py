@@ -252,4 +252,3 @@ if __name__ == "__main__":
     # Create the project structure in the current directory
     create_project_structure(project_structure)
     print("Project structure created successfully!")
-
