@@ -5,8 +5,8 @@ class DemandManager:
         self.data_file = data_file
         self.dept_file = dept_file
         self.product_file = product_file
-        self.columns = ["Request ID", "Request Name", "Description", "Origin Team", 
-                        "Receiving Team", "Product", "Dependencies", "Submission Date", 
+        self.columns = ["Request ID", "Request Name", "Description", "Origin Team",
+                        "Receiving Team", "Product", "Dependencies", "Submission Date",
                         "Expected Completion Date", "Status", "Priority"]
         self.load_data()
         self.load_departments()
@@ -28,7 +28,7 @@ class DemandManager:
     def add_request(self, req_name, desc, origin_team, rec_team, product, dependencies, sub_date, exp_date, status, priority):
         """Add a new request to the data."""
         req_id = len(self.data) + 1
-        new_entry = pd.DataFrame([[req_id, req_name, desc, origin_team, rec_team, product, dependencies, 
+        new_entry = pd.DataFrame([[req_id, req_name, desc, origin_team, rec_team, product, dependencies,
                                    sub_date, exp_date, status, priority]], columns=self.columns)
         self.data = pd.concat([self.data, new_entry], ignore_index=True)
         self.save_data()
