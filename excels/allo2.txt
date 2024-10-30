@@ -1,4 +1,3 @@
-
 Function ExtractNames(allocationList As String) As String
     Dim lines() As String
     Dim result As String
