@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# 设置源目录和目标目录
+SOURCE_DIR="your_source_directory"
+DEST_DIR="your_destination_directory"
+
+# 创建目标目录（如果不存在）
+mkdir -p "$DEST_DIR"
+
+# 遍历所有以 .b64 结尾的文件
+for file in "$SOURCE_DIR"/*.b64; do
+    if [[ -f "$file" ]]; then
+        # 获取解码后文件的目标路径（去掉 .b64 后缀）
+        decoded_file="$DEST_DIR/$(basename "${file%.b64}")"
+        
+        # 将 base64 解码后的内容写入目标文件
+        base64 -d "$file" > "$decoded_file"
+        
+        # 计算解码后的文件的校验和（以 sha256sum 为例）
+        checksum=$(sha256sum "$decoded_file" | awk '{print $1}')
+        
+        # 输出文件名和校验和
+        echo "File: $decoded_file"
+        echo "Checksum: $checksum"
+    fi
+done
+
