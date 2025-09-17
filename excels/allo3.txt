@@ -1,0 +1,53 @@
+Sub GenerateCartesianProductWithSelectedColumns()
+    Dim ws As Worksheet
+    Dim wsA As Worksheet
+    Dim wsB As Worksheet
+    Dim lastRowA As Long
+    Dim lastRowB As Long
+    Dim i As Long, j As Long
+    Dim outputRow As Long
+    
+    ' 设置表 A 和表 B 所在的工作表
+    Set wsA = ThisWorkbook.Sheets("表A") ' 将 "表A" 替换为实际的表 A 名称
+    Set wsB = ThisWorkbook.Sheets("表B") ' 将 "表B" 替换为实际的表 B 名称
+    
+    ' 设置表 C 为当前工作表
+    Set ws = ThisWorkbook.Sheets.Add
+    ws.Name = "表C"
+    
+    ' 获取表 A 和表 B 的最后一行
+    lastRowA = wsA.Cells(wsA.Rows.Count, "A").End(xlUp).Row ' 假设表 A 的数据从 A 列开始
+    lastRowB = wsB.Cells(wsB.Rows.Count, "B").End(xlUp).Row ' 假设表 B 的数据从 B 列开始
+    
+    ' 初始化输出表 C 的行
+    outputRow = 1
+    
+    ' 设置表 C 的标题行
+    ws.Cells(outputRow, 1).Value = "表A列A"
+    ws.Cells(outputRow, 2).Value = "表A列B"
+    ws.Cells(outputRow, 3).Value = "表A列D"
+    ws.Cells(outputRow, 4).Value = "表B列B"
+    ws.Cells(outputRow, 5).Value = "表B列C"
+    ws.Cells(outputRow, 6).Value = "表B列E"
+    outputRow = outputRow + 1
+    
+    ' 生成笛卡尔乘积
+    For i = 2 To lastRowA ' 假设表 A 的数据从第 2 行开始
+        For j = 2 To lastRowB ' 假设表 B 的数据从第 2 行开始
+            ' 从表 A 中提取 A, B, D 列的值
+            ws.Cells(outputRow, 1).Value = wsA.Cells(i, 1).Value ' 表 A 的 A 列
+            ws.Cells(outputRow, 2).Value = wsA.Cells(i, 2).Value ' 表 A 的 B 列
+            ws.Cells(outputRow, 3).Value = wsA.Cells(i, 4).Value ' 表 A 的 D 列
+            
+            ' 从表 B 中提取 B, C, E 列的值
+            ws.Cells(outputRow, 4).Value = wsB.Cells(j, 2).Value ' 表 B 的 B 列
+            ws.Cells(outputRow, 5).Value = wsB.Cells(j, 3).Value ' 表 B 的 C 列
+            ws.Cells(outputRow, 6).Value = wsB.Cells(j, 5).Value ' 表 B 的 E 列
+            
+            outputRow = outputRow + 1
+        Next j
+    Next i
+    
+    MsgBox "笛卡尔乘积生成完成，已输出到表C！", vbInformation
+End Sub
+

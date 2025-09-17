@@ -1,0 +1,21 @@
+Function ExtractNames(allocationList As String) As String
+    Dim lines() As String
+    Dim result As String
+    Dim line As Variant
+    Dim namePart As String
+    
+    ' 将分配列表按换行符分割
+    lines = Split(allocationList, vbLf)
+    
+    For Each line In lines
+        ' 分离并获取名字部分
+        namePart = Trim(Split(line, "-")(0))
+        
+        ' 组合名字
+        result = result & namePart & vbLf
+    Next line
+    
+    ' 移除最后一个换行符
+    ExtractNames = Left(result, Len(result) - 1)
+End Function
+

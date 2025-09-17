@@ -1,0 +1,26 @@
+Function CalculateAllocation(resource As Double, allocationList As String) As String
+    Dim lines() As String
+    Dim result As String
+    Dim line As Variant
+    Dim namePart As String
+    Dim percentPart As String
+    Dim allocValue As Double
+    
+    ' 分割换行符
+    lines = Split(allocationList, vbLf)
+    
+    For Each line In lines
+        ' 分离名称和分配比例
+        namePart = Trim(Split(line, "-")(0))
+        percentPart = Trim(Split(line, "-")(1))
+        
+        ' 去掉百分号并计算资源
+        allocValue = resource * (CDbl(Replace(percentPart, "%", "")) / 100)
+        
+        ' 组合结果
+        result = result & namePart & " - " & Format(allocValue, "0.00") & vbLf
+    Next line
+    
+    ' 移除最后一个换行符
+    CalculateAllocation = Left(result, Len(result) - 1)
+End Function

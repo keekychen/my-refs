@@ -1,0 +1,28 @@
+awk -F'-' '
+{ count[$1][$2]++ } # 按时间记录后缀的出现次数
+END {
+    for (time in count) {
+        if (count[time]["01"] && count[time]["02"] && count[time]["03"] && count[time]["04"]) {
+            for (suffix in count[time]) {
+                print time "-" suffix
+            }
+        }
+    }
+}' input.txt
+
+awk -F'-' '
+{
+    prefix[$1]; # 记录时间部分
+    suffix[$1][$2]++; # 记录时间部分对应的后缀部分
+}
+END {
+    for (time in prefix) {
+        if (suffix[time]["01"] && suffix[time]["02"] && suffix[time]["03"] && suffix[time]["04"]) {
+            print time "-01"
+            print time "-02"
+            print time "-03"
+            print time "-04"
+        }
+    }
+}' input.txt
+
