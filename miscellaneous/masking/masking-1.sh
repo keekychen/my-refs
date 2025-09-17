@@ -15,8 +15,8 @@ Description:
 Options:
   --dry-run              Show what would change but do NOT modify files
   --dir DIR              Root directory to scan (default: .)
-  --keyword1 STR         First keyword to require in a line (default: "Request body")
-  --keyword2 STR         Second keyword to require in a line (default: "clientIPAddress")
+  --keyword1 STR         First keyword to require in a line (default: "Request")
+  --keyword2 STR         Second keyword to require in a line (default: "IP")
   --mask STR             Replacement for the password value (default: "****masked****")
   -h, --help             Show this help
 
@@ -30,8 +30,8 @@ EOF
 # Defaults (as requested)
 ROOT_DIR="."
 DRYRUN=0
-keyword1="Request body"
-keyword2="clientIPAddress"
+keyword1="Request "
+keyword2="IPAddress"
 masked_password="****masked****"
 
 # Parse arguments
