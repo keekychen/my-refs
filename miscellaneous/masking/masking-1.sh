@@ -10,28 +10,29 @@ Description:
   Recursively scan DIR (default: .) for .log and .txt files (case-insensitive).
   For lines that contain both keyword1 and keyword2, mask the JSON password value
   (e.g., "password" : "secret") to masked_password, printing "filename: <masked line>"
-  for each changed line. Prints per-file and total counts.
+  for each changed line (printed to STDERR so you can see it even when output is redirected).
+  Prints per-file and total counts.
 
 Options:
   --dry-run              Show what would change but do NOT modify files
   --dir DIR              Root directory to scan (default: .)
-  --keyword1 STR         First keyword to require in a line (default: "Request body")
-  --keyword2 STR         Second keyword to require in a line (default: "clientIPAddress")
+  --keyword1 STR         First keyword to require in a line (default: "KW1")
+  --keyword2 STR         Second keyword to require in a line (default: "KW2")
   --mask STR             Replacement for the password value (default: "****masked****")
   -h, --help             Show this help
 
 Examples:
   mask_logs.sh
   mask_logs.sh --dry-run --dir /var/log/myapp
-  mask_logs.sh --keyword1 "Request body" --keyword2 "clientIPAddress" --mask "****masked****"
+  mask_logs.sh --keyword1 "KW1" --keyword2 "KW2" --mask "****masked****"
 EOF
 }
 
 # Defaults
 ROOT_DIR="."
 DRYRUN=0
-keyword1="Request body"
-keyword2="clientIPAddress"
+keyword1="KW1"
+keyword2="KW2"
 masked_password="****masked****"
 
 # Parse arguments
@@ -81,12 +82,13 @@ while IFS= read -r -d '' f; do
     {
       line = $0
       if (index(line, K1) && index(line, K2)) {
+        # Allow spaces/tabs after "password", around quotes, and around colon.
         new = gensub(/("password[[:space:]]*"[[:space:]]*:[[:space:]]*")[^"]+(")/,
                      "\\1" MASK "\\2", "g", line)
         if (new != line) {
           count++
-          # Always print masked line (both dry-run and update)
-          printf("%s: %s\n", FILE, new)
+          # Print masked line to STDERR so you can see it even when stdout is redirected
+          printf("%s: %s\n", FILE, new) > "/dev/stderr"
           line = new
         }
       }
