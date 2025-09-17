@@ -15,8 +15,8 @@ Description:
 Options:
   --dry-run              Show what would change but do NOT modify files
   --dir DIR              Root directory to scan (default: .)
-  --keyword1 STR         First keyword to require in a line (default: "Request")
-  --keyword2 STR         Second keyword to require in a line (default: "IP")
+  --keyword1 STR         First keyword to require in a line (default: "Request body")
+  --keyword2 STR         Second keyword to require in a line (default: "clientIPAddress")
   --mask STR             Replacement for the password value (default: "****masked****")
   -h, --help             Show this help
 
@@ -27,11 +27,11 @@ Examples:
 EOF
 }
 
-# Defaults (as requested)
+# Defaults
 ROOT_DIR="."
 DRYRUN=0
-keyword1="Request "
-keyword2="IPAddress"
+keyword1="Request body"
+keyword2="clientIPAddress"
 masked_password="****masked****"
 
 # Parse arguments
@@ -44,10 +44,10 @@ while [[ $# -gt 0 ]]; do
     --mask) masked_password="${2:-}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "ERROR: Unknown argument: $1" >&2; usage; exit 1 ;;
-  endesac
+  esac
 done
 
-# Basic checks
+# Checks
 if ! command -v awk >/dev/null 2>&1; then
   echo "ERROR: awk not found." >&2; exit 1
 fi
@@ -63,7 +63,7 @@ echo "Required keywords: '$keyword1' AND '$keyword2'"
 echo "Masked password value: '$masked_password'"
 [[ "$DRYRUN" -eq 1 ]] && echo "[DRY-RUN] No file will be modified."
 
-# Summary via temp file (scheme B)
+# Summary via temp file
 SUMMARY="$(mktemp)"
 TOTAL=0
 cleanup() { rm -f "$SUMMARY"; }
@@ -76,34 +76,23 @@ while IFS= read -r -d '' f; do
   tmp_out="$(mktemp)"
   tmp_cnt="$(mktemp)"
 
-  # Process file with gawk
   gawk -v FILE="$f" -v CNT="$tmp_cnt" -v K1="$keyword1" -v K2="$keyword2" -v MASK="$masked_password" '
-    BEGIN {
-      count = 0
-    }
+    BEGIN { count = 0 }
     {
       line = $0
-      # Only process lines containing both keywords (literal match, not regex)
       if (index(line, K1) && index(line, K2)) {
-        # Mask only the value of the JSON "password" field.
-        # Allow spaces/tabs after "password", around quotes, and around colon.
-        # Example matches:
-        #   "password":"secret"
-        #   "password " :"secret"
-        #   "password    "    :    "secret"
         new = gensub(/("password[[:space:]]*"[[:space:]]*:[[:space:]]*")[^"]+(")/,
                      "\\1" MASK "\\2", "g", line)
         if (new != line) {
           count++
-          printf("%s: %s\n", FILE, new)  # Print masked line with filename
+          # Always print masked line (both dry-run and update)
+          printf("%s: %s\n", FILE, new)
           line = new
         }
       }
       print line
     }
-    END {
-      print count > CNT
-    }
+    END { print count > CNT }
   ' "$f" > "$tmp_out"
 
   c=$(cat "$tmp_cnt" || echo 0)
@@ -126,7 +115,6 @@ while IFS= read -r -d '' f; do
   fi
 done < <(find "$ROOT_DIR" -type f \( -iname '*.log' -o -iname '*.txt' \) -print0)
 
-# Print summary
 echo "----- Summary -----"
 if [[ ! -s "$SUMMARY" ]]; then
   echo "No changes were necessary."
